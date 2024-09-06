@@ -1,11 +1,11 @@
 {
   "name": "sizafnode",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "server.mjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node --experimental-modules server.mjs"
   },
   "author": "Mayank Bhandure",
   "license": "ISC",
