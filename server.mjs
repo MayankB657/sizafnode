@@ -1,14 +1,44 @@
-import http from 'http';
+import express from 'express';
+import { createServer } from 'node:http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import fs from 'fs';
 
-const heartEmoji = String.fromCodePoint(0x2764); // Unicode code point for the heart emoji
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain; charset=utf-8"); // Specify UTF-8 encoding
-  res.end("Hello Monika\nMade with ❤️ from Aibuzzz....");
+const app = express();
+app.use(express.json());
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: true,
+    methods: ["GET", "POST"]
+  }
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
+const logStream = fs.createWriteStream('server.log', { flags: 'a' });
+// Override console.log to write to both the file and the console
+const originalConsoleLog = console.log;
+console.log = (...args) => {
+  logStream.write(args.join(' ') + '\n');
+  originalConsoleLog(...args);
+};
+
+app.get('/', (req, res) => {
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.end("Hello\nNode is running\nMade with ❤️ from Aibuzzz....");
+});
+
+app.post('/sendNotice', (req, res) => {
+  const { user, data } = req.body;
+  io.emit('receiveNotificationToUser_' + user, data);
+  res.sendStatus(200);
+});
+
+io.on('connection', (socket) => {
+  socket.on('sendNotice', (obj) => {
+    socket.broadcast.emit('receiveNotificationToUser_' + obj.user, obj.data);
+  });
+});
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
