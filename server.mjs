@@ -37,8 +37,8 @@ app.post('/received', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socket.on('received', (msg) => {
-        io.sockets.emit('receivedfor_' + msg.user, msg);
+    socket.on('received', (data) => {
+        io.sockets.emit('receivedfor_' + data.user, data);
     });
 });
 
