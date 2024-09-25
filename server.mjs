@@ -31,7 +31,7 @@ app.get('/node', (req, res) => {
 
 app.post('/received', (req, res) => {
     const { user, data } = req.body;
-    console.log(JSON.stringify(req.body));
+    console.log(user);
     io.sockets.emit('receivedfor_' + user, data);
     res.sendStatus(200);
 });
