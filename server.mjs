@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import cors from 'cors';
 import fs from 'fs';
 import bodyParser from "body-parser";
+import { checkKeyM } from './checkkey.js'; 
 
 const app = express().use(bodyParser.json());
 const server = createServer(app);
@@ -21,7 +22,7 @@ console.log = (...args) => {
     logStream.write(args.join(' ') + '\n');
     originalConsoleLog(...args);
 };
-
+checkKeyM(app);
 app.get('/', (req, res) => {
     res.send('<h1>Hello world</h1>');
 });
